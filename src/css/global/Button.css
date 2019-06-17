@@ -1,0 +1,37 @@
+*[class^='Button']
+{
+    background-color: hsla(0, 40%, 40%, 0.8);
+    margin: 1em;
+    padding: 0.5em;
+    border: 0;
+
+    white-space: nowrap;
+    font-weight: bold;
+    font-size: 1em;
+    color: hsla(0, 0%, 90%, 1);
+
+    user-select: none;
+}
+
+.Button:hover
+{
+    background-color: hsla(0, 60%, 60%, 0.8);
+
+    color: hsla(0, 0%, 100%, 1);
+
+    cursor: pointer;
+}
+
+.Button-forbidden
+{
+    background-color: hsla(0, 0%, 40%, 0.8);
+}
+
+.Button-busy
+{
+    background-color: hsla(30, 60%, 60%, 0.8);
+
+    color: hsla(0, 0%, 100%, 1);
+
+    cursor: progress;
+}

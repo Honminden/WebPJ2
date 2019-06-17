@@ -1,0 +1,44 @@
+.red
+{
+    filter: hue-rotate(0);
+}
+
+.orange
+{
+    filter: hue-rotate(30deg);
+}
+
+.yellow
+{
+    filter: hue-rotate(60deg);
+}
+
+.green
+{
+    filter: hue-rotate(120deg);
+}
+
+.blue
+{
+    filter: hue-rotate(240deg);
+}
+
+.purple
+{
+    filter: hue-rotate(300deg);
+}
+
+.brighter
+{
+    filter: brightness(200%);
+}
+
+.darker
+{
+    filter: brightness(50%);
+}
+
+.semi
+{
+    filter: grayscale(1) opacity(60%);
+}

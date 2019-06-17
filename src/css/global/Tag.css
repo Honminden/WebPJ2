@@ -1,0 +1,22 @@
+*[class^='Tag']
+{
+    margin: 1em;
+    padding: 0.5em;
+    border: 0 hsla(0, 0%, 50%, 0.1) solid;
+}
+
+*[class^='Tag'], *[class^='Tag'] *
+{
+    background-color: transparent;
+
+    white-space: nowrap;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    color: hsla(0, 40%, 40%, 0.8);
+}
+
+*[class^='Tag']:hover a
+{
+    color: hsla(0, 60%, 60%, 0.8);
+}

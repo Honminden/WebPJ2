@@ -1,0 +1,20 @@
+*[class^='Logo']
+{
+    padding: 1em;
+}
+
+*[class^='Logo'] img
+{
+    display: inline;
+
+    max-width: 3em;
+}
+
+*[class^='Logo'] h1
+{
+    display: inline;
+
+    font-size: 3em;
+    font-weight: bolder;
+    color: hsla(0, 0%, 100%, 1);
+}

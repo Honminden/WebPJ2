@@ -1,33 +1,45 @@
-.App {
+@import './css/global/Button.css';
+@import './css/global/color.css';
+@import './css/global/Figure.css';
+@import './css/global/Logo.css';
+@import './css/global/Nav.css';
+@import './css/global/Tag.css';
+@import './css/structure/Footage.css';
+@import './css/structure/TopButtons.css';
+@import './css/structure/TopNav.css';
+
+*
+{
+  font-family: "DejaVu Serif", sans-serif;
+  color: hsla(0, 0%, 90%, 1);
+}
+
+html
+{
+  background-color: hsla(0, 0%, 20%, 1);
+}
+
+li
+{
+  list-style-type: none;
+}
+
+a
+{
+  margin: 0 0.5em;
+  padding: 0.5em;
+  background-color: hsla(0, 0%, 100%, 0.1);
+
   text-align: center;
+  white-space: nowrap;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1em;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
-}
+a:hover
+{
+  background-color: hsla(0, 0%, 100%, 0.2);
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  color: hsla(0, 0%, 100%, 1);
 }

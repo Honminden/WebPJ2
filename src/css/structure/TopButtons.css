@@ -1,0 +1,8 @@
+.TopButtons
+{
+    position: fixed;
+    top: 0;
+    right: 0;
+
+    font-size: 0.6em;
+}

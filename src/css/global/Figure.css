@@ -1,0 +1,16 @@
+*[class^='Figure']
+{
+    display: table;
+    margin: 1em;
+}
+
+*[class^='Figure'] figcaption
+{
+    display: table-caption;
+    caption-side: bottom;
+}
+
+*[class^='Figure'] a
+{
+    display: table-row;
+}

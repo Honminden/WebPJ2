@@ -1,0 +1,23 @@
+.Footage
+{
+    display: block;
+    position: fixed;
+    top: 3em;
+    right: 0;
+}
+
+.Footage a
+{
+    font-size: 0.7em;
+}
+
+.Footage a:last-child
+{
+    font-weight: bolder;
+    color: hsla(60, 100%, 60%, 1);
+}
+
+.Footage a:last-child:hover
+{
+    color: hsla(60, 100%, 80%, 1);
+}

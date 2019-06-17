@@ -1,0 +1,9 @@
+*[class^='Nav']
+{
+    display: flex;
+}
+
+*[class^='Nav'] *
+{
+    flex: 1;
+}
