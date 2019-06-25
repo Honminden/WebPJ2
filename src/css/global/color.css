@@ -3,9 +3,19 @@
     filter: hue-rotate(0);
 }
 
+.red.brighter
+{
+    filter: hue-rotate(0) brightness(200%);
+}
+
 .orange
 {
     filter: hue-rotate(30deg);
+}
+
+.orange.brighter
+{
+    filter: hue-rotate(30deg) brightness(200%);
 }
 
 .yellow
@@ -13,9 +23,19 @@
     filter: hue-rotate(60deg);
 }
 
+.yellow.brighter
+{
+    filter: hue-rotate(60deg) brightness(200%);
+}
+
 .green
 {
     filter: hue-rotate(120deg);
+}
+
+.green.brighter
+{
+    filter: hue-rotate(120deg) brightness(200%);
 }
 
 .blue
@@ -23,19 +43,19 @@
     filter: hue-rotate(240deg);
 }
 
+.blue.brighter
+{
+    filter: hue-rotate(240deg) brightness(200%);
+}
+
 .purple
 {
     filter: hue-rotate(300deg);
 }
 
-.brighter
+.purple.brighter
 {
-    filter: brightness(200%);
-}
-
-.darker
-{
-    filter: brightness(50%);
+    filter: hue-rotate(300deg) brightness(200%);
 }
 
 .semi

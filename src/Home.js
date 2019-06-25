@@ -1,50 +1,75 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './js/Header';
-import Button from './js/component/global/Button';
 import Tag from './js/component/global/Tag';
 import Figure from './js/component/global/Figure';
+import Tools from "./js/function/Tools";
 import './App.css';
-
-const TEST_IMAGE =
-{
-    src: 'https://tse1-mm.cn.bing.net/th?id=OIP.x6sXocG8wmZR9DaancjW7AHaEo&w=275&h=168&c=7&o=5&pid=1.7',
-    alt: 'a fish',
-    innerText: 'Copper Banded Butterfly Fish'
-};
-const TEST_IMAGES =
-[
-    {
-        key: 1,
-        src: 'https://tse4-mm.cn.bing.net/th?id=OIP.7MCs1ElPsaUu-MYTHBlQeQHaKG&w=186&h=255&c=7&o=5&pid=1.7',
-        alt: 'a beauty',
-        innerText: 'a beauty'
-    },
-    {
-        key: 2,
-        src: 'https://tse3-mm.cn.bing.net/th?id=OIP.NmaEmjm1SQ6Pv3Oibpmg7QHaLH&w=186&h=279&c=7&o=5&pid=1.7',
-        alt: 'another beauty',
-        href: 'https://www.alexjdiary.com/wp-content/uploads/2016/07/Jenna-Kelly-Wilhelmina-Models-Alex-Jackson.jpg'
-    },
-    {
-        key: 3,
-        src: 'https://tse1-mm.cn.bing.net/th?id=OIP.MBQ5KjnfiAhMYnQOhDNcHAHaJQ&w=186&h=233&c=7&o=5&pid=1.7',
-        alt: 'a third beauty',
-        width: '300px'
-    }
-];
+//const HtmlToReactParser = require('html-to-react').Parser;
 
 function Home() {
+    const [hotImgs, setHotImgs] = useState(null);
+    const [newImgs, setNewImgs] = useState(null);
+
+  useEffect(() =>
+  {
+      function setImgs(type, setValue)
+      {
+          Tools.getJson(
+              '/artworks',
+              [{name: 'aim', value: type}],
+              (data) =>
+              {
+                  let newImgs = [];
+                  let key = 0;
+                  //let parser = new HtmlToReactParser();
+                  data.forEach(datum =>
+                  {
+                      newImgs.push(
+                          {
+                              key: ++key,
+                              href: null,
+                              src: Tools.getImgSrc(datum.imageFileName),
+                              alt: datum.title,
+                              width: '60vw',
+                              asideWidth: '60vw',
+                              //innerText: <p>{parser.parse(datum.description.replace('\\r\\n', '<br />'))}</p>
+                              innerText: datum.title
+                          });
+                  });
+                  setValue(newImgs);
+              });
+      }
+      if (!hotImgs)
+      {
+          setImgs('hot', setHotImgs)
+      }
+      if (!newImgs)
+      {
+          setImgs('new', setNewImgs)
+      }
+  }, [hotImgs, newImgs]);
+
   return (
     <div className="Home">
       <Header />
-      <h1> Home </h1>
-      <Button className={'green'} innerText={'Purchase'}/>
-      <Tag innerText={<a href={"https://en.wiktionary.org/wiki/realism"}> realism </a>}/>
-      <Figure src={TEST_IMAGE.src}
-              alt={TEST_IMAGE.alt}
-              color={'white'}
-              innerText={TEST_IMAGE.innerText}/>
-      <Figure imgs={TEST_IMAGES} captionSide={'top'} innerText={<Tag className={'red brighter'} innerText={'Beauties'}/>}/>
+      {
+          (hotImgs) ?
+              <Figure className={'vertical'}
+                      imgs = {hotImgs}
+                      captionSide={'top'}
+                      innerText={<Tag className={'red brighter'} fontSize={'2em'} innerText={'Hot'}/>}/>
+                      :
+              <Figure color={'white'} innerText={"Loading..."} />
+      }
+      {
+          (newImgs) ?
+              <Figure className={'vertical'}
+                      imgs = {newImgs}
+                      captionSide={'top'}
+                      innerText={<Tag className={'blue brighter'} fontSize={'2em'} innerText={'New'}/>}/>
+                      :
+              <Figure color={'white'} innerText={"Loading..."} />
+      }
     </div>
   );
 }

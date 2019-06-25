@@ -21,7 +21,9 @@ class Button extends React.Component
                        onClick=
                            {
                                (p.isForbidden) ? p.onForbiddenClick : (p.isBusy) ? p.onBusyClick : p.onClick
-                           }> {p.innerText} </button>;
+                           }> {
+                               (p.isForbidden && p.forbiddenText) ? p.forbiddenText :
+                                   (p.isBusy && p.busyText) ? p.busyText : p.innerText} </button>;
     }
 }
 

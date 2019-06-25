@@ -78,7 +78,6 @@ for (app of [home, user, cart, collection, help, search, notFound])
 Tools.addStep(app.step, home.step, notFound.step);
 
 // render App
-
 ReactDOM.render(app.App, document.getElementById('root'));
 
 // change title

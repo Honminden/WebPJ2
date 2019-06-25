@@ -3,6 +3,11 @@
     display: flex;
 }
 
+*[class^='Nav']
+{
+    flex-direction: row;
+}
+
 *[class^='Nav'] *
 {
     flex: 1;

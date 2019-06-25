@@ -20,7 +20,16 @@ export function mapImgs(imgs)
                           maxHeight: i.maxHeight
                       }
                   }/>
-              {(i.innerText) ? <aside> {i.innerText} </aside> : ''}
+              {(i.innerText) ?
+                  <aside style=
+                             {
+                                 {
+                                     width: i.asideWidth,
+                                     height: i.asideHeight,
+                                     maxWidth: i.asideMaxWidth,
+                                     maxHeight: i.asideMaxHeight
+                                 }
+                             }> {i.innerText} </aside> : ''}
             </a>);
     });
 }

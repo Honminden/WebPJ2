@@ -1,7 +1,16 @@
 .TopNav
 {
     position: relative;
-    left: 5vw;
-    width: 90vw;
+    left: 0;
+    right: 0;
+    padding-left: 1em;
+    padding-right: 1em;
     background-color: hsla(0, 0%, 100%, 0.1);
+}
+
+.TopNav a
+{
+    background-color: hsla(0, 0%, 100%, 0.6);
+
+    color: hsla(0, 0%, 0%, 0.8);
 }
