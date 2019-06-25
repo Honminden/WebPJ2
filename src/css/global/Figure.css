@@ -21,3 +21,8 @@
 
     overflow: hidden;
 }
+
+*[class^='Figure'].noAside aside
+{
+    display: none;
+}

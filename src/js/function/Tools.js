@@ -7,10 +7,12 @@ const Tools =
 {
     getValue: cookie.getValue,
     setValue: cookie.setValue,
-    getJson: fetch.getJSON,
+    getJSON: fetch.getJSON,
     getImgSrc: fetch.getImgSrc,
+    setImgs: fetch.setImgs,
     mapListItems: map.mapListItems,
     mapImgs: map.mapImgs,
+    mapInputs: map.mapInputs,
     getSteps: footage.getSteps,
     setSteps: footage.setSteps,
     addStep: footage.addStep

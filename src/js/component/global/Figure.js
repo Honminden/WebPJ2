@@ -20,17 +20,7 @@ class Figure extends React.Component
                                      color: p.color
                                  }
                              }> {(p.innerText) ? p.innerText : ''} </figcaption>
-                {
-                    (p.imgs) ? Tools.mapImgs(p.imgs, p) : <img src={p.src} alt={p.alt} style=
-                        {
-                            {
-                                width: p.width,
-                                height: p.height,
-                                maxWidth: p.maxWidth,
-                                maxHeight: p.maxHeight
-                            }
-                        }/>
-                }
+                {(p.imgs) ? Tools.mapImgs(p.imgs, p) : ''}
             </figure>);
     }
 }

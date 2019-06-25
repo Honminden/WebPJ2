@@ -4,50 +4,45 @@ import Tag from './js/component/global/Tag';
 import Figure from './js/component/global/Figure';
 import Tools from "./js/function/Tools";
 import './App.css';
-//const HtmlToReactParser = require('html-to-react').Parser;
 
-function Home() {
-    const [hotImgs, setHotImgs] = useState(null);
-    const [newImgs, setNewImgs] = useState(null);
+function Home()
+{
+  const HOT_NUM = 3;
+  const [hotIndex, setHotIndex] = useState(0);
+  const [hotImgs, setHotImgs] = useState(null);
+  const [newImgs, setNewImgs] = useState(null);
 
   useEffect(() =>
   {
-      function setImgs(type, setValue)
-      {
-          Tools.getJson(
-              '/artworks',
-              [{name: 'aim', value: type}],
-              (data) =>
-              {
-                  let newImgs = [];
-                  let key = 0;
-                  //let parser = new HtmlToReactParser();
-                  data.forEach(datum =>
-                  {
-                      newImgs.push(
-                          {
-                              key: ++key,
-                              href: null,
-                              src: Tools.getImgSrc(datum.imageFileName),
-                              alt: datum.title,
-                              width: '60vw',
-                              asideWidth: '60vw',
-                              //innerText: <p>{parser.parse(datum.description.replace('\\r\\n', '<br />'))}</p>
-                              innerText: datum.title
-                          });
-                  });
-                  setValue(newImgs);
-              });
-      }
       if (!hotImgs)
       {
-          setImgs('hot', setHotImgs)
+          Tools.setImgs('hot', setHotImgs);
       }
+
       if (!newImgs)
       {
-          setImgs('new', setNewImgs)
+          Tools.setImgs('new', setNewImgs);
       }
   }, [hotImgs, newImgs]);
+
+  useEffect(() =>
+  {
+      if (hotImgs)
+      {
+          const interval = setInterval(() =>
+          {
+              if (hotIndex < HOT_NUM - 1)
+              {
+                  setHotIndex(hotIndex + 1);
+              }
+              else
+              {
+                  setHotIndex(0);
+              }
+          }, 3000);
+          return () => clearInterval(interval);
+      }
+  });
 
   return (
     <div className="Home">
@@ -55,7 +50,7 @@ function Home() {
       {
           (hotImgs) ?
               <Figure className={'vertical'}
-                      imgs = {hotImgs}
+                      imgs={[hotImgs[hotIndex]]}
                       captionSide={'top'}
                       innerText={<Tag className={'red brighter'} fontSize={'2em'} innerText={'Hot'}/>}/>
                       :

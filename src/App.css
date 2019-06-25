@@ -1,6 +1,7 @@
 @import './css/global/Button.css';
 @import './css/global/color.css';
 @import './css/global/Figure.css';
+@import './css/global/Form.css';
 @import './css/global/Logo.css';
 @import './css/global/Nav.css';
 @import './css/global/Tag.css';
@@ -42,4 +43,9 @@ a:hover
   background-color: hsla(0, 0%, 100%, 0.2);
 
   color: hsla(0, 0%, 100%, 1);
+}
+
+div.details
+{
+  padding: 1em;
 }

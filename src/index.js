@@ -3,11 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import Home from './Home';
 import User from './User';
+import Search from "./Search";
+import Item from "./Item";
 import NotFound from './NotFound';
 import Tools from "./js/function/Tools";
 import * as serviceWorker from './serviceWorker';
 
-export const [home, user, cart, collection, help, search, notFound] =
+export const [home, user, cart, collection, help, search, item, notFound] =
 [
     {
         key: 'home',
@@ -51,11 +53,19 @@ export const [home, user, cart, collection, help, search, notFound] =
     },
     {
         key: 'search',
-        App: <NotFound />,
+        App: <Search />,
         href: '/search',
         innerText: "search",
         step: "search",
         subtitle: " - Search"
+    },
+    {
+        key: 'item',
+        App: <Item />,
+        href: '/item',
+        innerText: "item",
+        step: "item",
+        subtitle: " - Item"
     },
     {
         key: 'notFound',
@@ -69,7 +79,7 @@ export const [home, user, cart, collection, help, search, notFound] =
 
 // judge app
 let app;
-for (app of [home, user, cart, collection, help, search, notFound])
+for (app of [home, user, cart, collection, help, search, item, notFound])
 {
     if (app.href === window.location.pathname){break}
 }

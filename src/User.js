@@ -2,7 +2,8 @@ import React,{ useState, useEffect }  from 'react';
 import Header from './js/Header'
 import './App.css';
 
-function User() {
+function User()
+{
   return (
     <div className="User">
       <Header />

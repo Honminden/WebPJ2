@@ -1,0 +1,14 @@
+*[class^='Form']
+{
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+*[class^='Form'] input
+{
+    border: 0;
+    padding: 0.5em;
+    background-color: #333333;
+
+    color: #ffffff;
+}
