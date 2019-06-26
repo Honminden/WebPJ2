@@ -6,6 +6,8 @@ import Form from "./js/component/global/Form";
 import Tag from "./js/component/global/Tag";
 import Button from "./js/component/global/Button";
 
+const CAPCHA_DIV = './CAPCHA/';
+
 function User()
 {
   const [signed, setSigned] = useState(false);
@@ -16,6 +18,9 @@ function User()
   const [rePassword,setRePassword] = useState(null);
   const [phone,setPhone] = useState(null);
   const [address,setAddress] = useState(null);
+  const [capchaLocation, setCapchaLocation] = useState(null);
+  const [capcha, setCapcha] = useState(null);
+  const [capchaInput, setCapchaInput] = useState(null);
   const [deposit, setDeposit] = useState(null);
   const [submitDeposit,setSubmitDeposit] = useState(false);
   const [info,setInfo] = useState({state: "", user: {}});
@@ -32,20 +37,32 @@ function User()
              ]);
          info.state = "";
      }
-  });
+  }, [info.state, username, password]);
 
   useEffect(() =>
   {
-      Tools.getJSON('/sign', [{name: 'aim', value: 'check'}], data =>
+      if (!signed)
       {
-          let datum = (Array.isArray(data)) ? data[0] : data;
-          setSigned(datum.signed === true);
-          if (datum.user)
+          Tools.getJSON('/sign', [{name: 'aim', value: 'check'}], data =>
           {
-              setInfo({state: "", user: datum.user})
+              let datum = (Array.isArray(data)) ? data[0] : data;
+              setSigned(datum.signed === true);
+              if (datum.user)
+              {
+                  setInfo({state: "", user: datum.user})
+              }
+          });
+          if (!capcha)
+          {
+              let [a, b, c, d] = [Math.floor(Math.random() * 10),
+                  Math.floor(Math.random() * 10),
+                  Math.floor(Math.random() * 10),
+                  Math.floor(Math.random() * 10)];
+              setCapcha(`${a}${b}${c}${d}`);
+              setCapchaLocation([`${a}.png`, `${b}.png`, `${c}.png`, `${d}.png`])
           }
-      });
-  });
+      }
+  }, [signed, capcha]);
 
   useEffect(() =>
   {

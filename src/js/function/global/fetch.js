@@ -68,6 +68,7 @@ export function setImgs(type, setValue=()=>{}, customQueries=[])
                         fontSize: '0.4em',
                         innerText:
                             <p>
+                              <Tag className={'green brighter'} innerText={datum.price}/>
                               <Tag className={'purple brighter'} innerText={datum.title}/>
                               {(datum.description) ? parser.parse(datum.description
                                   .replace('\\r\\n', '<br />')) : ''}

@@ -35,26 +35,29 @@ function Item()
           }
           setSubmit(false);
       }
-  }, [submit, signed, info.user.userID, imgs]);
+  }, [submit, signed, info.user.userID, imgs, info.user]);
 
     useEffect(() =>
     {
-        Tools.getJSON('/sign', [{name: 'aim', value: 'check'}], data =>
+        if (!signed)
         {
-            let datum = (Array.isArray(data)) ? data[0] : data;
-            setSigned(datum.signed === true);
-            if (datum.user)
+            Tools.getJSON('/sign', [{name: 'aim', value: 'check'}], data =>
             {
-                setInfo({state: "", user: datum.user})
-            }
-        });
+                let datum = (Array.isArray(data)) ? data[0] : data;
+                setSigned(datum.signed === true);
+                if (datum.user)
+                {
+                    setInfo({state: info.state, user: datum.user})
+                }
+            });
+        }
     });
 
     useEffect(() =>
     {
         if (!imgs)
         {
-            Tools.setImgs('id', setImgs, [{name: 'id', value: window.location.search.replace('?id=', '')}]);
+            Tools.setImgs('view', setImgs, [{name: 'id', value: window.location.search.replace('?id=', '')}]);
         }
         else if (document.title === "HMD Art - Item") 
         {
@@ -75,6 +78,7 @@ function Item()
       {
           (imgs) ?
               <div className={'details'}>
+                <h1> {(signed) ? info.state : ""} </h1>
                 <h1><em> {imgs[0].datum.title} </em></h1>
                 <h2> {imgs[0].datum.artist} <small><time> {"(" + imgs[0].datum.yearOfWork + ")"} </time></small> </h2>
                 <Tag className={'red brighter'} innerText={"View: " + imgs[0].datum.view} />

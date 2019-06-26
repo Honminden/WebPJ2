@@ -37,6 +37,10 @@ app
     {
         res.sendFile(path.join(__dirname, 'build', 'img', req.param('fileName')));
     })
+    .get('/CAPCHA/:num', (req, res) =>
+    {
+        res.sendFile(path.join(__dirname, 'build', 'CAPCHA', req.param('num')));
+    })
     .get('/sign', (req, res) =>
     {
         console.log(req.query);
@@ -172,10 +176,48 @@ app
                     let [userID, artworkID] =
                         [req.query.userID, req.query.artworkID]
                             .map(i => Number.parseInt(i));
-                    console.log(`${id}, ${userID}, ${artworkID}`);
-                    dbDo(`INSERT INTO carts VALUES (${id}, ${userID}, ${artworkID})`, ()=>res.json({state: "Added"}), () => res.json({state: "Error"}));
-
+                    console.log(`SELECT * FROM artworks WHERE artworkID=${artworkID} AND orderID!=NULL`);
+                    dbDo(`SELECT * FROM artworks WHERE artworkID=${artworkID} AND orderID IS NOT NULL`, rows =>
+                    {
+                        if (rows[0])
+                        {
+                            res.json({state: "Has been bought!"});
+                        }
+                        else
+                        {
+                            dbDo(`SELECT * FROM carts WHERE artworkID=${artworkID} AND userID=${userID}`, rows =>
+                            {
+                                if (rows[0])
+                                {
+                                    res.json({state: "Has been added!"});
+                                }
+                                else
+                                {
+                                    console.log(`${id}, ${userID}, ${artworkID}`);
+                                    dbDo(`INSERT INTO carts VALUES (${id}, ${userID}, ${artworkID})`, ()=>res.json({state: "Added"}), () => res.json({state: "Error"}));
+                                }
+                            }, () => res.json({state: "Error"}));
+                        }
+                    }, () => res.json({state: "Error"}));
                 }, () => res.json({state: "Error"}));
+                break;
+            case 'cart':
+                let userID = Number.parseInt(req.query.userID);
+                if (userID)
+                {
+                    dbDo(`SELECT * FROM carts WHERE userID=${userID}`, rows =>
+                    {
+                        if (rows[0])
+                        {
+                            res.json({state: "", cart: rows});
+                        }
+                        else
+                        {
+                            res.json({state: "Nothing!", cart: null});
+                        }
+                    }, () => res.json({state: "Error"}));
+                }
+
                 break;
             default:
         }
@@ -212,20 +254,24 @@ app
                 }
                 break;
             // Item
-            case 'id':
-                req.query.id = Number.parseInt(req.query.id);
-                dbDo(`SELECT view FROM artworks WHERE artworkID=${req.query.id} LIMIT 1`, (rows)=>
+            case 'view':
+                let id = Number.parseInt(req.query.id);
+                dbDo(`SELECT view FROM artworks WHERE artworkID=${id} LIMIT 1`, (rows)=>
                 {
                     let view = rows[0].view + 1;
-                    dbDo(`UPDATE artworks SET view = ${view} WHERE artworkID=${req.query.id}`, ()=>
+                    dbDo(`UPDATE artworks SET view = ${view} WHERE artworkID=${id}`, ()=>
                     {
                         console.log("View updated");
                     })
                 });
-                dbDo(`SELECT * FROM artworks WHERE artworkID=${req.query.id} LIMIT 1`, rows => res.json(rows), () => res.json({title: "Nothing Found!"}));
+                dbDo(`SELECT * FROM artworks WHERE artworkID=${id} LIMIT 1`, rows => res.json(rows), () => res.json({title: "Nothing Found!"}));
+                break;
+            // Cart
+            case 'id':
+                let id2 = Number.parseInt(req.query.id);
+                dbDo(`SELECT * FROM artworks WHERE artworkID=${id2} LIMIT 1`, rows => res.json(rows), () => res.json({title: "Nothing Found!"}));
                 break;
             default:
-
         }
     })
     .get('/*', (req, res) =>

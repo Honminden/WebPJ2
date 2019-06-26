@@ -13,7 +13,7 @@ function Cart()
 {
   const [imgs, setImgs] = useState(null);
   const [signed, setSigned] = useState(false);
-  const [info,setInfo] = useState({state: "", user: {}, cart: []});
+  const [info,setInfo] = useState({state: "", user: {}, cart: null});
   const [submit, setSubmit] = useState(false);
 
   /*useEffect(() =>
@@ -39,16 +39,59 @@ function Cart()
 
     useEffect(() =>
     {
-        Tools.getJSON('/sign', [{name: 'aim', value: 'check'}], data =>
+        if (!signed)
         {
-            let datum = (Array.isArray(data)) ? data[0] : data;
-            setSigned(datum.signed === true);
-            if (datum.user)
+            Tools.getJSON('/sign', [{name: 'aim', value: 'check'}], data =>
             {
-                setInfo({state: "", user: datum.user, cart: datum.cart})
-            }
-        });
+                let datum = (Array.isArray(data)) ? data[0] : data;
+                setSigned(datum.signed === true);
+                if (datum.user)
+                {
+                    setInfo({state: "", user: datum.user, cart: info.cart})
+                }
+            });
+        }
     });
+
+    useEffect(() =>
+    {
+        if (!info.cart && signed)
+        {
+            Tools.getJSON('/sign',
+                [
+                    {name: 'aim', value: 'cart'},
+                    {name: 'userID', value: info.user.userID}
+                ], data =>
+            {
+                let datum = (Array.isArray(data)) ? data[0] : data;
+                if (datum.cart)
+                {
+                    setInfo({state: "", user: info.user, cart: datum.cart})
+                }
+            });
+        }
+    });
+
+    useEffect(() =>
+    {
+        if (!imgs)
+        {
+            setImgs([]);
+        }
+    }, [imgs]);
+
+    useEffect(() =>
+    {
+        if (imgs && imgs.length === 0 && info.cart)
+        {
+            info.cart.forEach(i =>
+                {
+                    Tools.setImgs('id', newImg => {setImgs(imgs.concat(newImg))},
+                        [{name: 'id', value: i.artworkID}]);
+                }
+            );
+        }
+    }, [imgs, info.cart]);
 
     /*useEffect(() =>
     {
@@ -69,6 +112,19 @@ function Cart()
           (signed) ?
               <div>
                 <h1> {info.user.name}'s Cart </h1>
+                <h1> {(signed) ? info.state : ""} </h1>
+                {
+                    (info.cart) ? info.cart.map(i => <h2> {i.artworkID} </h2>) : ''
+                }
+                {
+                    (imgs) ?
+                        <Figure className={'vertical'}
+                                imgs = {imgs}
+                                captionSide={'top'}
+                                innerText={<Tag className={'orange brighter'} fontSize={'2em'} innerText={'Items'}/>}/>
+                        :
+                        <Figure color={'white'} innerText={"Loading..."} />
+                }
               </div>
               : <h1> Sign in first. </h1>
       }
