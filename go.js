@@ -5,7 +5,20 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 
-app.use(express.static(path.join(__dirname, 'build')));
+const options = {
+    dotfiles: 'ignore',
+    etag: false,
+    extensions: ['htm', 'html'],
+    index: false,
+    maxAge: '1d',
+    redirect: false,
+    headers: {
+        'x-timestamp': Date.now(),
+        'x-sent': true
+    }
+};
+
+app.use(express.static(path.join(__dirname, 'build'), options));
 
 app.use(cookieParser());
 app.use(session(
@@ -37,7 +50,8 @@ app
                         req.session.signed =
                             {
                                 signed: false,
-                                userID: -1
+                                userID: -1,
+                                user: null
                             };
                     }
                     if (!err)
@@ -56,11 +70,12 @@ app
                         {
                             if (rows[0])
                             {
-                                res.json({state: "Successful"});
+                                res.json({state: "Successful", user: rows[0]});
                                 req.session.signed =
                                     {
                                         signed: true,
-                                        userID: id
+                                        userID: id,
+                                        user: rows[0]
                                     };
                                 req.session.save();
                             }
@@ -80,42 +95,87 @@ app
                 req.session.signed =
                     {
                         signed: false,
-                        userID: -1
+                        userID: -1,
+                        user: null
                     };
                 req.session.save();
                 break;
-            default:
-        }
-    })
-    .post('/users', (req, res) =>
-    {
-        console.log(req.body);
-        switch (req.body.aim)
-        {
-            case 'new':
-                if (validate(req.body))
+            case 'up':
+                if (validate(req.query))
                 {
-                    dbDo('SELECT * FROM users ORDER BY userID DESC LIMIT 1', rows =>
+                    let name = decodeURIComponent(req.query.name);
+                    console.log(`SELECT * FROM users WHERE name LIKE "${name}"`);
+                    dbDo(`SELECT * FROM users WHERE name LIKE "${name}"`, rows =>
                     {
-                        let id;
                         if (rows[0])
                         {
-                            id = rows[0].userID + 1;
+                            res.json({state: "The same Username exists!"});
                         }
                         else
                         {
-                            id = 1;
-                        }
-                        let name = req.body.name;
-                        let email = req.body.email;
-                        let password = req.body.password;
-                        let tel = req.body.phone;
-                        let address = req.body.address;
-                        console.log(`${id}, ${name}, ${email}, ${password}, ${tel}, ${address}`);
-                        dbDo(`INSERT INTO users VALUES (${id}, ${name}, ${email}, ${password}, ${tel}, ${address}, 0)`, ()=>res.json({state: "Signed"}), () => res.json({state: "Error"}));
+                            dbDo('SELECT * FROM users ORDER BY userID DESC LIMIT 1', rows =>
+                            {
+                                let id;
+                                if (rows[0])
+                                {
+                                    id = rows[0].userID + 1;
+                                }
+                                else
+                                {
+                                    id = 1;
+                                }
+                                let [name, email, password, tel, address] =
+                                    [req.query.name, req.query.email, req.query.password, req.query.phone, req.query.address]
+                                        .map(i => decodeURIComponent(i));
+                                console.log(`${id}, ${name}, ${email}, ${password}, ${tel}, ${address}`);
+                                dbDo(`INSERT INTO users VALUES (${id}, "${name}", "${email}", "${password}", "${tel}", "${address}", 0)`, ()=>res.json({state: "Signed"}), () => res.json({state: "Error"}));
 
+                            }, () => res.json({state: "Invalid"}));
+                        }
                     }, () => res.json({state: "Error"}));
+
                 }
+                else
+                {
+                    res.json({state: "Invalid"});
+                }
+                break;
+            case 'deposit':
+                dbDo(`SELECT * FROM users WHERE userID="${req.query.userID}"`, rows =>
+                {
+                    if (rows[0])
+                    {
+                        dbDo(`UPDATE users SET balance = balance + ${req.query.deposit} WHERE userID=${req.query.userID}`, ()=>
+                        {
+                            res.json({state: "Successful", user: rows[0]});
+                            console.log("Deposit" + req.query.deposit);
+                        }, () => res.json({state: "Failed"}))
+                    }
+                    else
+                    {
+                        res.json({state: "Failed"});
+                    }
+                }, () => res.json({state: "Failed"}));
+                break;
+            case 'addToCart':
+                dbDo('SELECT * FROM carts ORDER BY cartID DESC LIMIT 1', rows =>
+                {
+                    let id;
+                    if (rows[0])
+                    {
+                        id = rows[0].cartID + 1;
+                    }
+                    else
+                    {
+                        id = 1;
+                    }
+                    let [userID, artworkID] =
+                        [req.query.userID, req.query.artworkID]
+                            .map(i => Number.parseInt(i));
+                    console.log(`${id}, ${userID}, ${artworkID}`);
+                    dbDo(`INSERT INTO carts VALUES (${id}, ${userID}, ${artworkID})`, ()=>res.json({state: "Added"}), () => res.json({state: "Error"}));
+
+                }, () => res.json({state: "Error"}));
                 break;
             default:
         }
@@ -177,9 +237,24 @@ app
 console.log("serving in :1919");
 
 //session
-function validate(body)
+function validate(query)
 {
-    return true;
+    try
+    {
+        let [validation2, validation3, validation4, validation5] =
+            [
+                query.password === query.rePassword,
+                query.password.length >= 6,
+                /[0-9]/.test(query.password),
+                /[A-z]/.test(query.password)
+            ];
+        console.log(`${validation2};${validation3};${validation4};${validation5}`)
+        return validation2 && validation3 && validation4 && validation5;
+    }
+    catch (e)
+    {
+        return false;
+    }
 }
 
 // database
@@ -200,6 +275,7 @@ function dbDo(sql, callback, error = (err) => {throw err})
     {
         if (err)
         {
+            console.log(err);
             error(err);
         }
         callback(rows);

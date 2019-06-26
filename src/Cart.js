@@ -9,14 +9,14 @@ import Button from "./js/component/global/Button";
 const HtmlToReactParser = require('html-to-react').Parser;
 const parser = new HtmlToReactParser();
 
-function Item()
+function Cart()
 {
   const [imgs, setImgs] = useState(null);
   const [signed, setSigned] = useState(false);
-  const [info,setInfo] = useState({state: "", user: {}});
+  const [info,setInfo] = useState({state: "", user: {}, cart: []});
   const [submit, setSubmit] = useState(false);
 
-  useEffect(() =>
+  /*useEffect(() =>
   {
       if (submit)
       {
@@ -30,12 +30,12 @@ function Item()
                   ], data =>
                   {
                       let datum = (Array.isArray(data)) ? data[0] : data;
-                      setInfo({state: datum.state, user: info.user});
+                      setInfo({state: datum.state, user: info.user, cart: info.cart});
                   });
           }
           setSubmit(false);
       }
-  }, [submit, signed, info.user.userID, imgs]);
+  }, [submit, signed, info.user.userID, imgs]);*/
 
     useEffect(() =>
     {
@@ -45,12 +45,12 @@ function Item()
             setSigned(datum.signed === true);
             if (datum.user)
             {
-                setInfo({state: "", user: datum.user})
+                setInfo({state: "", user: datum.user, cart: datum.cart})
             }
         });
     });
 
-    useEffect(() =>
+    /*useEffect(() =>
     {
         if (!imgs)
         {
@@ -60,44 +60,20 @@ function Item()
         {
             document.title = imgs[0].datum.title;
         }
-    }, [imgs]);
+    }, [imgs]);*/
 
   return (
     <div className="Item">
       <Header />
       {
-          (imgs) ?
-              <Figure className={'vertical noAside'}
-                      imgs={imgs}/>
-                      :
-              <Figure color={'white'} innerText={"Loading..."} />
-      }
-      {
-          (imgs) ?
-              <div className={'details'}>
-                <h1><em> {imgs[0].datum.title} </em></h1>
-                <h2> {imgs[0].datum.artist} <small><time> {"(" + imgs[0].datum.yearOfWork + ")"} </time></small> </h2>
-                <Tag className={'red brighter'} innerText={"View: " + imgs[0].datum.view} />
-                <Tag className={'yellow brighter'} innerText={imgs[0].datum.genre} />
-                <Tag className={'green brighter'} innerText={"Price: " + imgs[0].datum.price} />
-                <Tag className={'blue brighter'} innerText={imgs[0].datum.timeReleased} />
-                {
-                    (signed) ?
-                        <Button className={'orange brighter'}
-                                onClick={e => {setSubmit(true); e.preventDefault();}}
-                                innerText={"Add To Cart"}/>
-                        : ''
-                }
-                <h3> Description </h3>
-                <p> {parser.parse(imgs[0].datum.description
-                    .replace('\\r\\n', '<br />'))} </p>
-                <p> Width: {imgs[0].datum.width} Height: {imgs[0].datum.height} </p>
+          (signed) ?
+              <div>
+                <h1> {info.user.name}'s Cart </h1>
               </div>
-              : ''
+              : <h1> Sign in first. </h1>
       }
-
     </div>
   );
 }
 
-export default Item;
+export default Cart;

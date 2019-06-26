@@ -8,6 +8,7 @@ import Item from "./Item";
 import NotFound from './NotFound';
 import Tools from "./js/function/Tools";
 import * as serviceWorker from './serviceWorker';
+import Cart from "./Cart";
 
 export const [home, user, cart, collection, help, search, item, notFound] =
 [
@@ -29,7 +30,7 @@ export const [home, user, cart, collection, help, search, item, notFound] =
     },
     {
         key: 'cart',
-        App: <NotFound />,
+        App: <Cart />,
         href: '/cart',
         innerText: "cart",
         step: "cart",

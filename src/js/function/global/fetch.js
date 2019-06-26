@@ -93,17 +93,31 @@ export function signIn(setValue=()=>{}, customQueries=[])
 
 function validate(inputs)
 {
-    return true;
+    try
+    {
+        let [validation1, validation2, validation3, validation4, validation5] =
+            [
+                inputs.every(i => i !== null),
+                inputs[2].value === inputs[3].value,
+                inputs[2].value.length >=6,
+                /[0-9]/.test(inputs[2].value),
+                /[A-z]/.test(inputs[2].value)
+            ];
+        return validation1 && validation2 && validation3 && validation4 && validation5;
+    }
+    catch (e)
+    {
+        return false;
+    }
 }
 
 export function signUp(setValue=()=>{}, customQueries={})
 {
     if (validate(customQueries))
     {
-        customQueries.aim = "new";
-        postJSON(
-            '/users',
-            customQueries,
+        getJSON(
+            '/sign',
+            [{name: 'aim', value: 'up'}].concat(customQueries),
             (data) =>
             {
                 let datum = (Array.isArray(data)) ? data[0] : data;
@@ -112,6 +126,6 @@ export function signUp(setValue=()=>{}, customQueries={})
     }
     else
     {
-        setValue({state: "invalid"});
+        setValue({state: "Invalid"});
     }
 }

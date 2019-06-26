@@ -4,6 +4,7 @@ import './App.css';
 import Tools from "./js/function/Tools";
 import Form from "./js/component/global/Form";
 import Tag from "./js/component/global/Tag";
+import Button from "./js/component/global/Button";
 
 function User()
 {
@@ -15,18 +16,35 @@ function User()
   const [rePassword,setRePassword] = useState(null);
   const [phone,setPhone] = useState(null);
   const [address,setAddress] = useState(null);
-  const [info,setInfo] = useState({state: ""});
+  const [deposit, setDeposit] = useState(null);
+  const [submitDeposit,setSubmitDeposit] = useState(false);
+  const [info,setInfo] = useState({state: "", user: {}});
   const [submit, setSubmit] = useState(false);
+
+  useEffect(() =>
+  {
+     if (info.state === "Signed")
+     {
+         Tools.signIn(setInfo,
+             [
+                 {name: 'name', value: username},
+                 {name: 'password', value: password}
+             ]);
+         info.state = "";
+     }
+  });
 
   useEffect(() =>
   {
       Tools.getJSON('/sign', [{name: 'aim', value: 'check'}], data =>
       {
           let datum = (Array.isArray(data)) ? data[0] : data;
-          console.log(datum.signed);
-          console.log(datum.userID);
           setSigned(datum.signed === true);
-      })
+          if (datum.user)
+          {
+              setInfo({state: "", user: datum.user})
+          }
+      });
   });
 
   useEffect(() =>
@@ -36,14 +54,14 @@ function User()
           if (signUp)
           {
               Tools.signUp(setInfo,
-                  {
-                      name: username,
-                      email: email,
-                      password: password,
-                      rePassword: rePassword,
-                      phone: phone,
-                      address: address
-                  });
+                  [
+                      {name: 'name', value: username},
+                      {name: 'email', value: email},
+                      {name: 'password', value: password},
+                      {name: 'rePassword', value: rePassword},
+                      {name: 'phone', value: phone},
+                      {name: 'address', value: address}
+                  ]);
           }
           else
           {
@@ -57,14 +75,65 @@ function User()
       }
   }, [address, email, password, phone, rePassword, signUp, submit, username]);
 
+    useEffect(() =>
+    {
+        if (submitDeposit)
+        {
+            Tools.getJSON('/sign',
+                [
+                    {name: 'aim', value: 'deposit'},
+                    {name: 'userID', value: info.user.userID},
+                    {name: 'deposit', value: deposit}
+                ], data =>
+            {
+                let datum = (Array.isArray(data)) ? data[0] : data;
+                setInfo(datum);
+            });
+            setSubmitDeposit(false);
+        }
+    }, [submitDeposit, info.user, deposit]);
+
   return (
     <div className="User">
       <Header />
-      <h1> {(signed) ? "User" : (signUp) ? "SignUp" : "SignIn"} </h1>
       <Tag innerText={(info.state) ? info.state : ''}/>
       {
           (signed) ?
               <div>
+                  <h1> {(signed) ? "Welcome, " + info.user.name : (signUp) ? "SignUp" : "SignIn"} </h1>
+                  <table>
+                      <thead> User: {info.user.name} </thead>
+                      <tr>
+                          <td> Email </td>
+                          <td> {info.user.email} </td>
+                      </tr>
+                      <tr>
+                          <td> Phone </td>
+                          <td> {info.user.tel} </td>
+                      </tr>
+                      <tr>
+                          <td> Address </td>
+                          <td> {info.user.address} </td>
+                      </tr>
+                      <tr>
+                          <td> Balance </td>
+                          <td> {info.user.balance} </td>
+                      </tr>
+                  </table>
+                  <Form className={'block'}
+                        inputs=
+                            {[
+                                {
+                                    key: 14,
+                                    innerText: 'Deposit',
+                                    type: 'number',
+                                    name: 'deposit',
+                                    onChange: e => {setDeposit(e.target.value)}
+                                }
+                            ]}
+                        onClick={null}
+                        innerText={"Submit"}
+                        onSubmit={e => {setSubmitDeposit(true); e.preventDefault();}}/>
               </div>
               :
               (signUp) ?
@@ -153,7 +222,6 @@ function User()
                         onClick={null}
                         innerText={"Submit"}
                         onSubmit={e => {setSubmit(true); e.preventDefault();}}/>
-
       }
     </div>
   );
