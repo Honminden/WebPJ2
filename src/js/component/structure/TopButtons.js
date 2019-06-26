@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from '../global/Button';
 import Nav from "../global/Nav";
+import Tools from "../../function/Tools";
 
 class TopButtons extends React.Component
 {
@@ -18,7 +19,9 @@ class TopButtons extends React.Component
                       <Button className={'green' + ((p.show.footage) ? '' : ' semi')}
                               onClick={p.onFootageClick}
                               innerText={((p.show.footage) ? "Hide" : "Show") + " Footage"}/>
-                      <Button className={'red'} innerText={"Logout"}/>
+                      <Button className={'red'}
+                              onClick={() => {Tools.getJSON('/sign', [{name: 'aim', value: 'out'}])}}
+                              innerText={"Sign Out"}/>
                     </div>
                 }/>);
     }

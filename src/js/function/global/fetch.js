@@ -19,10 +19,23 @@ function getFullLocation(location, queries)
     return `${location}?${params.toString()}`;
 }
 
-export function getJSON(location, queries, callback)
+export function getJSON(location, queries, callback=()=>{})
 {
     let req = new Request(getFullLocation(location, queries));
     fetch(req, GET_INIT)
+        .then(res => res.json())
+        .then(data => {callback(data)});
+}
+
+export function postJSON(location, body, callback)
+{
+    let req = new Request(location);
+    fetch(req,
+        {
+            method: 'POST',
+            headers: headers,
+            body: body
+        })
         .then(res => res.json())
         .then(data => {callback(data)});
 }
@@ -32,7 +45,7 @@ export function getImgSrc(fileName)
     return `${IMG_LOCATION}/${fileName}`;
 }
 
-export function setImgs(type, setValue, customQueries=[])
+export function setImgs(type, setValue=()=>{}, customQueries=[])
 {
     getJSON(
         '/artworks',
@@ -64,4 +77,41 @@ export function setImgs(type, setValue, customQueries=[])
             });
             setValue(newImgs);
         });
+}
+
+export function signIn(setValue=()=>{}, customQueries=[])
+{
+    getJSON(
+        '/sign',
+        [{name: 'aim', value: 'in'}].concat(customQueries),
+        (data) =>
+        {
+            let datum = (Array.isArray(data)) ? data[0] : data;
+            setValue(datum);
+        });
+}
+
+function validate(inputs)
+{
+    return true;
+}
+
+export function signUp(setValue=()=>{}, customQueries={})
+{
+    if (validate(customQueries))
+    {
+        customQueries.aim = "new";
+        postJSON(
+            '/users',
+            customQueries,
+            (data) =>
+            {
+                let datum = (Array.isArray(data)) ? data[0] : data;
+                setValue(datum);
+            });
+    }
+    else
+    {
+        setValue({state: "invalid"});
+    }
 }
