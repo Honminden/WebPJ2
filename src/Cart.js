@@ -11,31 +11,36 @@ const parser = new HtmlToReactParser();
 
 function Cart()
 {
+  const [sum, setSum] = useState(0);
   const [imgs, setImgs] = useState(null);
   const [signed, setSigned] = useState(false);
-  const [info,setInfo] = useState({state: "", user: {}, cart: null});
+  const [info,setInfo] = useState({state: "", user: {}});
   const [submit, setSubmit] = useState(false);
 
-  /*useEffect(() =>
-  {
-      if (submit)
-      {
-          if (signed)
-          {
-              Tools.getJSON('/sign',
-                  [
-                      {name: 'aim', value: 'addToCart'},
-                      {name: 'userID', value: info.user.userID},
-                      {name: 'artworkID', value: imgs[0].datum.artworkID}
-                  ], data =>
-                  {
-                      let datum = (Array.isArray(data)) ? data[0] : data;
-                      setInfo({state: datum.state, user: info.user, cart: info.cart});
-                  });
-          }
-          setSubmit(false);
-      }
-  }, [submit, signed, info.user.userID, imgs]);*/
+    useEffect(() =>
+    {
+        if (signed && info.user.userID)
+        {
+            Tools.setImgs('cart', setImgs, [{name: 'userID', value: info.user.userID}]);
+        }
+    }, [info.user, signed]);
+
+    useEffect(() =>
+    {
+       let s = 0;
+       if (imgs)
+       {
+           imgs.forEach(i =>
+           {
+              if (i.datum.price)
+              {
+                  s += i.datum.price;
+              }
+           });
+       }
+
+       setSum(s);
+    }, [imgs]);
 
     useEffect(() =>
     {
@@ -47,51 +52,11 @@ function Cart()
                 setSigned(datum.signed === true);
                 if (datum.user)
                 {
-                    setInfo({state: "", user: datum.user, cart: info.cart})
+                    setInfo({state: "", user: datum.user})
                 }
             });
         }
     });
-
-    useEffect(() =>
-    {
-        if (!info.cart && signed)
-        {
-            Tools.getJSON('/sign',
-                [
-                    {name: 'aim', value: 'cart'},
-                    {name: 'userID', value: info.user.userID}
-                ], data =>
-            {
-                let datum = (Array.isArray(data)) ? data[0] : data;
-                if (datum.cart)
-                {
-                    setInfo({state: "", user: info.user, cart: datum.cart})
-                }
-            });
-        }
-    });
-
-    useEffect(() =>
-    {
-        if (!imgs)
-        {
-            setImgs([]);
-        }
-    }, [imgs]);
-
-    useEffect(() =>
-    {
-        if (imgs && imgs.length === 0 && info.cart)
-        {
-            info.cart.forEach(i =>
-                {
-                    Tools.setImgs('id', newImg => {setImgs(imgs.concat(newImg))},
-                        [{name: 'id', value: i.artworkID}]);
-                }
-            );
-        }
-    }, [imgs, info.cart]);
 
     /*useEffect(() =>
     {
@@ -112,10 +77,8 @@ function Cart()
           (signed) ?
               <div>
                 <h1> {info.user.name}'s Cart </h1>
+                <h2> {sum} </h2>
                 <h1> {(signed) ? info.state : ""} </h1>
-                {
-                    (info.cart) ? info.cart.map(i => <h2> {i.artworkID} </h2>) : ''
-                }
                 {
                     (imgs) ?
                         <Figure className={'vertical'}

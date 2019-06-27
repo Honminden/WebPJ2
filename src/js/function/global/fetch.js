@@ -54,28 +54,32 @@ export function setImgs(type, setValue=()=>{}, customQueries=[])
         {
             let newImgs = [];
             let parser = new HtmlToReactParser();
-            data = (data.forEach) ? data : [data];
-            data.forEach(datum =>
+            if (data)
             {
-                newImgs.push(
-                    {
-                        key: datum.artworkID,
-                        href: '/item?id=' + datum.artworkID,
-                        src: (datum.imageFileName) ? Tools.getImgSrc(datum.imageFileName) : '',
-                        alt: datum.title,
-                        width: '80vw',
-                        asideWidth: '90vw',
-                        fontSize: '0.4em',
-                        innerText:
-                            <p>
-                              <Tag className={'green brighter'} innerText={datum.price}/>
-                              <Tag className={'purple brighter'} innerText={datum.title}/>
-                              {(datum.description) ? parser.parse(datum.description
-                                  .replace('\\r\\n', '<br />')) : ''}
-                            </p>,
-                        datum: datum
-                    });
-            });
+                data = (data.forEach) ? data : [data];
+                data.forEach(datum =>
+                {
+                    newImgs.push(
+                        {
+                            key: datum.artworkID,
+                            href: '/item?id=' + datum.artworkID,
+                            src: (datum.imageFileName) ? Tools.getImgSrc(datum.imageFileName) : '',
+                            alt: datum.title,
+                            width: '80vw',
+                            asideWidth: '90vw',
+                            fontSize: '0.4em',
+                            innerText:
+                                <p>
+                                    <Tag className={'green brighter'} innerText={datum.price}/>
+                                    <Tag className={'purple brighter'} innerText={datum.title}/>
+                                    {(datum.description) ? parser.parse(datum.description
+                                        .replace('\\r\\n', '<br />')) : ''}
+                                </p>,
+                            datum: datum
+                        });
+                });
+            }
+
             setValue(newImgs);
         });
 }
@@ -129,4 +133,9 @@ export function signUp(setValue=()=>{}, customQueries={})
     {
         setValue({state: "Invalid"});
     }
+}
+
+export function deleteItem(cartID)
+{
+    getJSON('/artworks', [{name: 'aim', value: 'deleteCart'},{name: 'cartID', value: cartID}])
 }

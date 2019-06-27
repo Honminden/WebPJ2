@@ -1,4 +1,6 @@
 import React from "react";
+import Button from "../../component/global/Button";
+import Tools from "../Tools";
 
 export function mapListItems(listItems)
 {
@@ -10,6 +12,7 @@ export function mapImgs(imgs)
     return imgs.map((i) =>
     {
         return (
+            <div>
             <a href={i.href} key={i.key}>
               <img src={i.src} alt={i.alt} style=
                   {
@@ -33,7 +36,27 @@ export function mapImgs(imgs)
                              }> {i.innerText} </aside>
                   : ''
               }
-            </a>);
+                {
+                    (i.datum.order) ?
+                        <span> {`OrderID: ${i.datum.order.orderID}
+                        Sum: ${i.datum.order.sum}
+                        Time: ${i.datum.order.timeCreated}`} </span>
+                        : ''
+                }
+                {
+                    (i.datum.buyer) ?
+                        <span> {`Username: ${i.datum.buyer.name}
+                        Email: ${i.datum.buyer.email}
+                        Address: ${i.datum.buyer.address}`} </span>
+                        : ''
+                }
+            </a>
+
+                {
+                    (i.datum.cart) ?
+                        <Button onClick={() => {Tools.deleteItem(i.datum.cart.cartID)}} innerText={"Delete"} />
+                        : ''
+                }</div>);
     });
 }
 

@@ -271,6 +271,175 @@ app
                 let id2 = Number.parseInt(req.query.id);
                 dbDo(`SELECT * FROM artworks WHERE artworkID=${id2} LIMIT 1`, rows => res.json(rows), () => res.json({title: "Nothing Found!"}));
                 break;
+
+            case 'own':
+                let userID2 = Number.parseInt(req.query.userID);
+                if (userID2)
+                {
+                    dbDo(`SELECT * FROM artworks WHERE ownerID=${userID2}`, rows =>
+                    {
+                        if (rows[0])
+                        {
+                            res.json(rows);
+                        }
+                        else
+                        {
+                            res.json(null);
+                        }
+                    }, () => res.json({state: "Error"}));
+                }
+                break;
+            case 'order':
+                let userID3 = Number.parseInt(req.query.userID);
+                if (userID3)
+                {
+                    dbDo(`SELECT * FROM orders WHERE ownerID=${userID3}`, rows =>
+                    {
+                        let orders = rows;
+                        if (rows[0])
+                        {
+                            let sum = 'sum';
+                            rows.map(r => sum += `UNION SELECT * FROM artworks WHERE orderID=${r.orderID}`);
+                            sum = sum.replace('sumUNION ', '');
+                            dbDo(sum, rows =>
+                            {
+                                if (rows[0])
+                                {
+                                    orders.forEach(o =>
+                                    {
+                                        rows.forEach(r =>
+                                        {
+                                            if (r.orderID === o.orderID)
+                                            {
+                                                r.order = o;
+                                            }
+                                        })
+                                    });
+                                    res.json(rows);
+                                }
+                                else
+                                {
+                                    res.json(null);
+                                }
+                            });
+                        }
+                        else
+                        {
+                            res.json(null);
+                        }
+                    }, () => res.json({state: "Error"}));
+                }
+                break;
+            case 'sold':
+                let userID4 = Number.parseInt(req.query.userID);
+                if (userID4)
+                {
+                    dbDo(`SELECT * FROM artworks WHERE ownerID=${userID4} AND orderID IS NOT NULL`, rows =>
+                    {
+                        if (rows[0])
+                        {
+                            let rs = rows;
+                            let sum = 'sum';
+                            rows.map(r => sum += `UNION SELECT * FROM orders WHERE orderID=${r.orderID}`);
+                            sum = sum.replace('sumUNION ', '');
+                            dbDo(sum, rows =>
+                            {
+                                if (rows[0])
+                                {
+                                    rows.forEach(o =>
+                                    {
+                                        rs.forEach(r =>
+                                        {
+                                            if (r.orderID === o.orderID)
+                                            {
+                                                r.order = o;
+                                            }
+                                        })
+                                    });
+                                    let sum = 'sum';
+                                    rs.map(r => sum += `UNION SELECT * FROM users WHERE userID=${r.order.ownerID} `);
+                                    sum = sum.replace('sumUNION ', '');
+                                    dbDo(sum, rows =>
+                                    {
+                                        if (rows[0])
+                                        {
+                                            rows.forEach(b =>
+                                            {
+                                                rs.forEach(r =>
+                                                {
+                                                    if (r.order.ownerID === b.userID)
+                                                    {
+                                                        r.buyer = b;
+                                                    }
+                                                })
+                                            });
+                                            res.json(rs);
+                                        }
+                                        else
+                                        {
+                                            res.json(null);
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    res.json(null);
+                                }
+                            });
+                        }
+                        else
+                        {
+                            res.json(null);
+                        }
+                    }, () => res.json({state: "Error"}));
+                }
+                break;
+            case 'cart':
+                let userID5 = Number.parseInt(req.query.userID);
+                if (userID5)
+                {
+                    dbDo(`SELECT * FROM carts WHERE userID=${userID5}`, rows =>
+                    {
+                        let carts = rows;
+                        if (rows[0])
+                        {
+                            let sum = 'sum';
+                            rows.map(r => sum += `UNION SELECT * FROM artworks WHERE artworkID=${r.artworkID} `);
+                            sum = sum.replace('sumUNION ', '');
+                            dbDo(sum, rows =>
+                            {
+                                if (rows[0])
+                                {
+                                    carts.forEach(c =>
+                                    {
+                                        rows.forEach(r =>
+                                        {
+                                            if (r.artworkID === c.artworkID)
+                                            {
+                                                r.cart = c;
+                                            }
+                                        })
+                                    });
+                                    res.json(rows);
+                                }
+                                else
+                                {
+                                    res.json(null);
+                                }
+                            });
+                        }
+                        else
+                        {
+                            res.json(null);
+                        }
+                    }, () => res.json({state: "Error"}));
+                }
+                break;
+            case 'deleteCart':
+                let cartID = Number.parseInt(req.query.cartID);
+                console.log(`!DELETE cart ${cartID}`);
+                dbDo(`DELETE FROM carts WHERE cartID=${cartID}`, rows => {res.json(rows)});
+                break;
             default:
         }
     })

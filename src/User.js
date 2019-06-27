@@ -5,6 +5,7 @@ import Tools from "./js/function/Tools";
 import Form from "./js/component/global/Form";
 import Tag from "./js/component/global/Tag";
 import Button from "./js/component/global/Button";
+import Figure from "./js/component/global/Figure";
 
 const CAPCHA_DIV = './CAPCHA/';
 
@@ -18,13 +19,23 @@ function User()
   const [rePassword,setRePassword] = useState(null);
   const [phone,setPhone] = useState(null);
   const [address,setAddress] = useState(null);
-  const [capchaLocation, setCapchaLocation] = useState(null);
-  const [capcha, setCapcha] = useState(null);
-  const [capchaInput, setCapchaInput] = useState(null);
   const [deposit, setDeposit] = useState(null);
   const [submitDeposit,setSubmitDeposit] = useState(false);
   const [info,setInfo] = useState({state: "", user: {}});
   const [submit, setSubmit] = useState(false);
+  const [own, setOwn] = useState(null);
+  const [order, setOrder] = useState(null);
+  const [sold, setSold] = useState(null);
+
+    useEffect(() =>
+    {
+        if (signed && info.user.userID)
+        {
+            Tools.setImgs('own', setOwn, [{name: 'userID', value: info.user.userID}]);
+            Tools.setImgs('order', setOrder, [{name: 'userID', value: info.user.userID}]);
+            Tools.setImgs('sold', setSold, [{name: 'userID', value: info.user.userID}]);
+        }
+    }, [info.user, signed]);
 
   useEffect(() =>
   {
@@ -52,17 +63,8 @@ function User()
                   setInfo({state: "", user: datum.user})
               }
           });
-          if (!capcha)
-          {
-              let [a, b, c, d] = [Math.floor(Math.random() * 10),
-                  Math.floor(Math.random() * 10),
-                  Math.floor(Math.random() * 10),
-                  Math.floor(Math.random() * 10)];
-              setCapcha(`${a}${b}${c}${d}`);
-              setCapchaLocation([`${a}.png`, `${b}.png`, `${c}.png`, `${d}.png`])
-          }
       }
-  }, [signed, capcha]);
+  }, [signed]);
 
   useEffect(() =>
   {
@@ -151,6 +153,33 @@ function User()
                         onClick={null}
                         innerText={"Submit"}
                         onSubmit={e => {setSubmitDeposit(true); e.preventDefault();}}/>
+                  {
+                      (own) ?
+                          <Figure className={'vertical'}
+                                  imgs = {own}
+                                  captionSide={'top'}
+                                  innerText={<Tag className={'blue brighter'} fontSize={'2em'} innerText={'Own'}/>}/>
+                          :
+                          <Figure color={'white'} innerText={"Nothing"} />
+                  }
+                  {
+                      (order) ?
+                          <Figure className={'vertical'}
+                                  imgs = {order}
+                                  captionSide={'top'}
+                                  innerText={<Tag className={'blue brighter'} fontSize={'2em'} innerText={'Order'}/>}/>
+                          :
+                          <Figure color={'white'} innerText={"Nothing"} />
+                  }
+                  {
+                      (sold) ?
+                          <Figure className={'vertical'}
+                                  imgs = {sold}
+                                  captionSide={'top'}
+                                  innerText={<Tag className={'blue brighter'} fontSize={'2em'} innerText={'Sold'}/>}/>
+                          :
+                          <Figure color={'white'} innerText={"Nothing"} />
+                  }
               </div>
               :
               (signUp) ?
